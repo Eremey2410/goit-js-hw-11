@@ -8,19 +8,13 @@ export default class NewApiService {
     this.searchQuery = '';
     this.page = 1;
   }
-  getData() {
-    return axios
-      .get(
-        `${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`
-      )
-      .then(response => {
-        // обработка успешного запроса
-        // console.log( response.data.hits);
+  async getData() {
+    const promise = await axios.get(
+      `${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`
+    );
+    this.incrementPage();
 
-        this.incrementPage();
-        return response;
-        // return response.data.hits;
-      });
+    return promise;
   }
   incrementPage() {
     this.page += 1;
