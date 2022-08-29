@@ -17,32 +17,32 @@ refs.btnLoadMore.addEventListener('click', onLoadMore);
 
 function onSearchForm(event) {
   event.preventDefault();
-
   clearMarkup();
 
   newsApiService.query = event.currentTarget.elements.searchQuery.value;
-  if (newsApiService.query !== '') {
-    newsApiService.resetPage();
-    console.log(newsApiService);
-    newsApiService
-      .getData()
-      .then(response => {
-        console.log(response);
-        Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
 
-        return response.data.hits;
-      })
-      .then(data => addMarkup(data), removeClassIsHidden())
-      .catch(error => {
-        console.log(error);
-      });
-  } else {
-    Notify.failure(
-      'Too many matches found. Please enter a more specific name.'
-    );
-    addClassIsHidden();
-    return;
-  }
+  newsApiService.resetPage();
+  // console.log(newsApiService);
+  newsApiService
+    .getData()
+    .then(response => {
+      if (response.data.hits.length === 0) {
+        Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
+        return;
+      } else {
+        Notify.success(`Hooray! We found ${response.data.totalHits} images.`);
+      }
+      return response.data.hits;
+    })
+    .then(hits => {
+      addMarkup(hits), removeClassIsHidden();
+      console.log(hits);
+    })
+    .catch(error => {
+      console.log(error);
+    });
 }
 
 function onLoadMore() {
@@ -59,36 +59,35 @@ function onLoadMore() {
     });
   smoothScroll();
 }
-function addMarkup(data) {
-  if (data.length === 0) {
+function addMarkup(hits) {
+  if (hits.length === 0) {
     Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
   }
-  const elements = data;
-  const markup = elements
+  const markup = hits
     .map(
-      element =>
+      hit =>
         `<div class="photo-card">
-        <a class="gallery-item" href = "${element.largeImageURL}" >
-    <img class="gallery-image" src="${element.webformatURL}" 
-    alt="${element.tags}" loading="lazy" /></a>
+        <a class="gallery-item" href = "${hit.largeImageURL}" >
+    <img class="gallery-image" src="${hit.webformatURL}" 
+    alt="${hit.tags}" loading="lazy" /></a>
     <div class="info">
       <p class="info-item">
         <b>Likes</b>
-        ${element.likes}
+        ${hit.likes}
       </p>
       <p class="info-item">
         <b>Views</b>
-        ${element.views}
+        ${hit.views}
       </p>
       <p class="info-item">
         <b>Comments</b>
-        ${element.comments}
+        ${hit.comments}
       </p>
       <p class="info-item">
         <b>Downloads</b>
-        ${element.downloads}
+        ${hit.downloads}
       </p>
     </div>
   </div>`

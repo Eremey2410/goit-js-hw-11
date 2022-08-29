@@ -11,11 +11,12 @@ export default class NewApiService {
   getData() {
     return axios
       .get(
-        `${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=40&page=${this.page}`
+        `${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&per_page=200&page=${this.page}`
       )
       .then(response => {
         // обработка успешного запроса
-        console.log(response.data.hits);
+        // console.log( response.data.hits);
+
         this.incrementPage();
         return response;
         // return response.data.hits;
