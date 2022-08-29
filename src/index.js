@@ -1,11 +1,16 @@
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import NewApiService from './partials/js/api-service';
-import refs from './partials/js/references';
-import addMarkup from './partials/js/render';
 
+const refs = {
+  searchForm: document.querySelector('#search-form'),
+  btnLoadMore: document.querySelector('.load-more'),
+  gallery: document.querySelector('.gallery'),
+};
 const newsApiService = new NewApiService();
-
 // console.log(newsApiService);
+let gallery = new SimpleLightbox('.gallery a');
 
 refs.searchForm.addEventListener('submit', onSearchForm);
 refs.btnLoadMore.addEventListener('click', onLoadMore);
@@ -54,7 +59,46 @@ function onLoadMore() {
     });
   smoothScroll();
 }
+function addMarkup(data) {
+  if (data.length === 0) {
+    Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+  }
+  const elements = data;
+  const markup = elements
+    .map(
+      element =>
+        `<div class="photo-card">
+        <a class="gallery-item" href = "${element.largeImageURL}" >
+    <img class="gallery-image" src="${element.webformatURL}" 
+    alt="${element.tags}" loading="lazy" /></a>
+    <div class="info">
+      <p class="info-item">
+        <b>Likes</b>
+        ${element.likes}
+      </p>
+      <p class="info-item">
+        <b>Views</b>
+        ${element.views}
+      </p>
+      <p class="info-item">
+        <b>Comments</b>
+        ${element.comments}
+      </p>
+      <p class="info-item">
+        <b>Downloads</b>
+        ${element.downloads}
+      </p>
+    </div>
+  </div>`
+    )
+    .join('');
+  refs.gallery.insertAdjacentHTML('beforeend', markup);
+  // console.log(elements);
 
+  gallery.refresh();
+}
 function clearMarkup() {
   refs.gallery.innerHTML = '';
 }
