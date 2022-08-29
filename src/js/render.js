@@ -1,39 +1,40 @@
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import Refs from './references';
 
+const refs = new Refs();
 let gallery = new SimpleLightbox('.gallery a');
 
-export default function addMarkup(data) {
-  if (data.length === 0) {
+export function addMarkup(hits) {
+  if (hits.length === 0) {
     Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
   }
-  const elements = data;
-  const markup = elements
+  const markup = hits
     .map(
-      element =>
+      hit =>
         `<div class="photo-card">
-        <a class="gallery-item" href = "${element.largeImageURL}" >
-    <img class="gallery-image" src="${element.webformatURL}" 
-    alt="${element.tags}" loading="lazy" /></a>
+        <a class="gallery-item" href = "${hit.largeImageURL}" >
+    <img class="gallery-image" src="${hit.webformatURL}" 
+    alt="${hit.tags}" loading="lazy" /></a>
     <div class="info">
       <p class="info-item">
         <b>Likes</b>
-        ${element.likes}
+        ${hit.likes}
       </p>
       <p class="info-item">
         <b>Views</b>
-        ${element.views}
+        ${hit.views}
       </p>
       <p class="info-item">
         <b>Comments</b>
-        ${element.comments}
+        ${hit.comments}
       </p>
       <p class="info-item">
         <b>Downloads</b>
-        ${element.downloads}
+        ${hit.downloads}
       </p>
     </div>
   </div>`
